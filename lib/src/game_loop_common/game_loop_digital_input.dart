@@ -21,7 +21,8 @@
 part of game_loop_common;
 
 /// Return false if you don't want the event processed normally.
-typedef bool DigitalButtonEventInterceptor(DigitalButtonEvent event);
+typedef bool DigitalButtonEventInterceptor(DigitalButtonEvent event,
+                                           bool repeat);
 
 /** The state of a digital button: frame and time when button was
  * last pressed and released.
@@ -75,14 +76,14 @@ class DigitalInput {
 
   /** Deliver an input event */
   void digitalButtonEvent(DigitalButtonEvent event) {
-    if (interceptor != null) {
-      if (interceptor(event) == false) {
-        return;
-      }
-    }
     DigitalButton button = buttons[event.buttonId];
     if (button == null) {
       return;
+    }
+    if (interceptor != null) {
+      if (interceptor(event, button.down) == false) {
+        return;
+      }
     }
     if (event.down) {
       if (button.down == false) {
