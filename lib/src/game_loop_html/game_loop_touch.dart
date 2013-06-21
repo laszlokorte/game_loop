@@ -67,27 +67,50 @@ class GameLoopTouchSet {
   void _start(TouchEvent event) {
     event.changedTouches.forEach((Touch touch) {
       GameLoopTouch glTouch = new GameLoopTouch(touch.identifier);
+      assert(activeTouches[touch.identifier] == null);
       activeTouches[touch.identifier] = glTouch;
       _addPosition(glTouch, touch);
       if (gameLoop.onTouchStart != null) {
         gameLoop.onTouchStart(gameLoop, glTouch);
       }
     });
+    _verifyTouchList(event.touches);
   }
   void _end(TouchEvent event) {
     event.changedTouches.forEach((Touch touch) {
       var glTouch = activeTouches[touch.identifier];
+      assert(glTouch != null);
       activeTouches.remove(touch.identifier);
       _addPosition(glTouch, touch);
       if (gameLoop.onTouchEnd != null) {
         gameLoop.onTouchEnd(gameLoop, glTouch);
       }
     });
+    _verifyTouchList(event.touches);
   }
   void _move(TouchEvent event) {
     event.changedTouches.forEach((Touch touch) {
       var glTouch = activeTouches[touch.identifier];
       _addPosition(glTouch, touch);
+    });
+    _verifyTouchList(event.touches);
+  }
+  bool _inTouchList(List<Touch> touches, identifier) {
+    for (int i = 0; i < touches.length; i++) {
+      if (touches[i].identifier == identifier) {
+        return true;
+      }
+    }
+    return false;
+  }
+  _verifyTouchList(List<Touch> touches) {
+    if (touches.length != activeTouches.length) {
+        print('${touches.length} ${activeTouches.length}');
+    }
+    activeTouches.forEach((identifier, touch) {
+      if (!_inTouchList(identifier, touches)) {
+        print('Did not find $identifier');
+      }
     });
   }
 }
