@@ -254,12 +254,15 @@ class GameLoopHtml extends GameLoop {
   final List<_GameLoopTouchEvent> _touchEvents = new List<_GameLoopTouchEvent>();
   void _touchStartEvent(TouchEvent event) {
     _touchEvents.add(new _GameLoopTouchEvent(event, _GameLoopTouchEvent.Start));
+    event.preventDefault();
   }
   void _touchMoveEvent(TouchEvent event) {
     _touchEvents.add(new _GameLoopTouchEvent(event, _GameLoopTouchEvent.Move));
+    event.preventDefault();
   }
   void _touchEndEvent(TouchEvent event) {
     _touchEvents.add(new _GameLoopTouchEvent(event, _GameLoopTouchEvent.End));
+    event.preventDefault();
   }
 
   final List<KeyboardEvent> _keyboardEvents = new List<KeyboardEvent>();
