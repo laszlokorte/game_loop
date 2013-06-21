@@ -116,7 +116,7 @@ class GameLoopTouchSet {
         print('${touches.length} ${activeTouches.length}');
     }
     activeTouches.forEach((identifier, touch) {
-      if (!_inTouchList(identifier, touches)) {
+      if (!_inTouchList(touches, identifier)) {
         print('Did not find $identifier');
       }
     });
