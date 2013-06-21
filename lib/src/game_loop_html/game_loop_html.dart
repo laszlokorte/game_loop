@@ -302,6 +302,7 @@ class GameLoopHtml extends GameLoop {
       document.onFullscreenChange.listen(_fullscreenChange);
       window.onTouchStart.listen(_touchStartEvent);
       window.onTouchEnd.listen(_touchEndEvent);
+      window.onTouchCancel.listen(_touchEndEvent);
       window.onTouchMove.listen(_touchMoveEvent);
       window.onKeyDown.listen(_keyDown);
       window.onKeyUp.listen(_keyUp);
