@@ -311,10 +311,10 @@ class GameLoopHtml extends GameLoop {
       window.onKeyUp.listen(_keyUp);
       window.onResize.listen(_resize);
 
-      window.onMouseMove.listen(_mouseMove);
-      window.onMouseDown.listen(_mouseDown);
-      window.onMouseUp.listen(_mouseUp);
-      window.onMouseWheel.listen(_mouseWheel);
+      element.onMouseMove.listen(_mouseMove);
+      element.onMouseDown.listen(_mouseDown);
+      element.onMouseUp.listen(_mouseUp);
+      element.onMouseWheel.listen(_mouseWheel);
       _initialized = true;
     }
     _interrupt = false;
