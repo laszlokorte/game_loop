@@ -103,7 +103,7 @@ class GameLoopHtml extends GameLoop {
     _processMouseEvents();
     _processTouchEvents();
   }
-  
+
   void _processKeyboardEvents() {
     for (KeyboardEvent keyboardEvent in _keyboardEvents) {
       DigitalButtonEvent event;
@@ -153,7 +153,7 @@ class GameLoopHtml extends GameLoop {
         } else {
           clampY = y;
         }
-        
+
         int dx = mouseEvent.client.x-_lastMousePos.x;
         int dy = mouseEvent.client.y-_lastMousePos.y;
         _lastMousePos = mouseEvent.client;
@@ -170,7 +170,7 @@ class GameLoopHtml extends GameLoop {
     }
     _mouseEvents.clear();
   }
-  
+
   void _processTouchEvents() {
     for (_GameLoopTouchEvent touchEvent in _touchEvents) {
       switch (touchEvent.type) {
@@ -303,10 +303,10 @@ class GameLoopHtml extends GameLoop {
     if (_initialized == false) {
       document.onFullscreenError.listen(_fullscreenError);
       document.onFullscreenChange.listen(_fullscreenChange);
-      window.onTouchStart.listen(_touchStartEvent);
-      window.onTouchEnd.listen(_touchEndEvent);
-      window.onTouchCancel.listen(_touchEndEvent);
-      window.onTouchMove.listen(_touchMoveEvent);
+      element.onTouchStart.listen(_touchStartEvent);
+      element.onTouchEnd.listen(_touchEndEvent);
+      element.onTouchCancel.listen(_touchEndEvent);
+      element.onTouchMove.listen(_touchMoveEvent);
       window.onKeyDown.listen(_keyDown);
       window.onKeyUp.listen(_keyUp);
       window.onResize.listen(_resize);

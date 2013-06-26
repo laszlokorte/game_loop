@@ -36,11 +36,10 @@ class GameLoopTimer {
   double get timeToFire => _timeToFireRemaining;
 
   final double _timeToFire;
-  bool _periodic;
-  bool get periodic => _periodic;
+  bool periodic;
 
   GameLoopTimer._internal(this.gameLoop, this._timeToFire, this.onTimer,
-      {this._periodic: false}) {
+      {this.periodic: false}) {
     _timeToFireRemaining = _timeToFire;
   }
   void _update(double dt) {
@@ -71,6 +70,6 @@ class GameLoopTimer {
   /** Cancel the timer. */
   void cancel() {
     _timeToFireRemaining = -1.0;
-    _periodic = false;
+    periodic = false;
   }
 }
