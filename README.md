@@ -113,6 +113,6 @@ main() {
   });
   gameLoop.start();
   // Add a timer which fires in half a second.
-  var timer = gameLoop.addTimer((timer) => print('timer fired.', 0.5);
+  var timer = gameLoop.addTimer((timer) => print('timer fired.'), 0.5);
 }
 ```
