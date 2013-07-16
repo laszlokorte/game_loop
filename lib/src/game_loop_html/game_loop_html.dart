@@ -103,7 +103,7 @@ class GameLoopHtml extends GameLoop {
     _touchSet = new GameLoopTouchSet(this);
   }
 
-  GameLoopHtml.withSource(this.element, this._eventSource) {
+  GameLoopHtml.withEventSource(this.element, this._eventSource) {
     _keyboard = new Keyboard(this);
     _mouse = new Mouse(this);
     _gamepad0 = new GameLoopGamepad(this);
