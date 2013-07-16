@@ -154,8 +154,15 @@ class GameLoopHtml extends GameLoop {
           clampY = y;
         }
 
-        int dx = mouseEvent.client.x-_lastMousePos.x;
-        int dy = mouseEvent.client.y-_lastMousePos.y;
+        int dx, dy;
+        if(_pointerLock.locked) {
+          dx = mouseEvent.movement.x;
+          dy = mouseEvent.movement.y;
+        } else {
+          dx = mouseEvent.client.x-_lastMousePos.x;
+          dy = mouseEvent.client.y-_lastMousePos.y;
+          _lastMousePos = mouseEvent.client;
+        }
         _lastMousePos = mouseEvent.client;
         var event = new GameLoopMouseEvent(x, y, dx, dy, clampX, clampY, withinCanvas, time, frame);
         _mouse.gameLoopMouseEvent(event);
