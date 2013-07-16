@@ -21,11 +21,13 @@
 library game_loop_html;
 
 import 'dart:html';
+import 'dart:async';
 import 'dart:json';
 import 'package:game_loop/game_loop_common.dart';
 export 'package:game_loop/game_loop_common.dart';
 
 part 'src/game_loop_html/game_loop_html.dart';
+part 'src/game_loop_html/game_loop_event_source.dart';
 part 'src/game_loop_html/game_loop_keyboard.dart';
 part 'src/game_loop_html/game_loop_mouse.dart';
 part 'src/game_loop_html/game_loop_gamepad.dart';

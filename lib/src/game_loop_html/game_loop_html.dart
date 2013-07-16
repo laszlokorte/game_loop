@@ -42,6 +42,7 @@ typedef void GameLoopTouchEventFunction(GameLoop gameLoop, GameLoopTouch touch);
 /** The game loop */
 class GameLoopHtml extends GameLoop {
   final Element element;
+  final GameLoopEventSource _eventSource;
   int _frameCounter = 0;
   bool _initialized = false;
   bool _interrupt = false;
@@ -90,13 +91,26 @@ class GameLoopHtml extends GameLoop {
   GameLoopTouchSet get touchSet => _touchSet;
 
   /** Construct a new game loop attaching it to [element] */
-  GameLoopHtml(this.element) : super() {
+  GameLoopHtml(Element element_) :
+    super(),
+    element = element_,
+    _eventSource = new GameLoopEventSource(element_.document, element_)
+  {
     _keyboard = new Keyboard(this);
     _mouse = new Mouse(this);
     _gamepad0 = new GameLoopGamepad(this);
     _pointerLock = new PointerLock(this);
     _touchSet = new GameLoopTouchSet(this);
   }
+
+  GameLoopHtml.withSource(this.element, this._eventSource) {
+    _keyboard = new Keyboard(this);
+    _mouse = new Mouse(this);
+    _gamepad0 = new GameLoopGamepad(this);
+    _pointerLock = new PointerLock(this);
+    _touchSet = new GameLoopTouchSet(this);
+  }
+
 
   void _processInputEvents() {
     _processKeyboardEvents();
@@ -308,20 +322,20 @@ class GameLoopHtml extends GameLoop {
   /** Start the game loop. */
   void start() {
     if (_initialized == false) {
-      document.onFullscreenError.listen(_fullscreenError);
-      document.onFullscreenChange.listen(_fullscreenChange);
-      element.onTouchStart.listen(_touchStartEvent);
-      element.onTouchEnd.listen(_touchEndEvent);
-      element.onTouchCancel.listen(_touchEndEvent);
-      element.onTouchMove.listen(_touchMoveEvent);
-      window.onKeyDown.listen(_keyDown);
-      window.onKeyUp.listen(_keyUp);
-      window.onResize.listen(_resize);
+      _eventSource.onFullscreenError.listen(_fullscreenError);
+      _eventSource.onFullscreenChange.listen(_fullscreenChange);
+      _eventSource.onTouchStart.listen(_touchStartEvent);
+      _eventSource.onTouchEnd.listen(_touchEndEvent);
+      _eventSource.onTouchCancel.listen(_touchEndEvent);
+      _eventSource.onTouchMove.listen(_touchMoveEvent);
+      _eventSource.onKeyDown.listen(_keyDown);
+      _eventSource.onKeyUp.listen(_keyUp);
+      _eventSource.onResize.listen(_resize);
 
-      element.onMouseMove.listen(_mouseMove);
-      element.onMouseDown.listen(_mouseDown);
-      element.onMouseUp.listen(_mouseUp);
-      element.onMouseWheel.listen(_mouseWheel);
+      _eventSource.onMouseMove.listen(_mouseMove);
+      _eventSource.onMouseDown.listen(_mouseDown);
+      _eventSource.onMouseUp.listen(_mouseUp);
+      _eventSource.onMouseWheel.listen(_mouseWheel);
       _initialized = true;
     }
     _interrupt = false;
