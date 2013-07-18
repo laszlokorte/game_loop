@@ -42,7 +42,7 @@ typedef void GameLoopTouchEventFunction(GameLoop gameLoop, GameLoopTouch touch);
 /** The game loop */
 class GameLoopHtml extends GameLoop {
   final Element element;
-  final GameLoopEventSource _eventSource;
+  final Stream<GameLoopEvent> _eventSource;
   int _frameCounter = 0;
   bool _initialized = false;
   bool _interrupt = false;
@@ -113,102 +113,9 @@ class GameLoopHtml extends GameLoop {
 
 
   void _processInputEvents() {
-    _processKeyboardEvents();
-    _processMouseEvents();
-    _processTouchEvents();
-  }
-
-  void _processKeyboardEvents() {
-    for (KeyboardEvent keyboardEvent in _keyboardEvents) {
-      DigitalButtonEvent event;
-      bool down = keyboardEvent.type == "keydown";
-      double time = GameLoop.timeStampToSeconds(keyboardEvent.timeStamp);
-      int buttonId = keyboardEvent.keyCode;
-      event = new DigitalButtonEvent(buttonId, down, frame, time);
-      _keyboard.digitalButtonEvent(event);
+    for(GameLoopEvent e in _inputEvents) {
+      // Nothing happening here yet.
     }
-    _keyboardEvents.clear();
-  }
-
-  void _processMouseEvents() {
-    mouse._resetAccumulators();
-    // TODO(alexgann): Remove custom offset logic once dart:html supports natively (M6).
-    final docElem = document.documentElement;
-    final box = element.getBoundingClientRect();
-    int canvasX = (box.left + window.pageXOffset - docElem.clientLeft).floor();
-    int canvasY = (box.top  + window.pageYOffset - docElem.clientTop).floor();
-    for (MouseEvent mouseEvent in _mouseEvents) {
-      bool moveEvent = mouseEvent.type == 'mousemove';
-      bool wheelEvent = mouseEvent.type == 'mousewheel';
-      bool down = mouseEvent.type == 'mousedown';
-      double time = GameLoop.timeStampToSeconds(mouseEvent.timeStamp);
-      if (moveEvent) {
-        int mouseX = mouseEvent.page.x;
-        int mouseY = mouseEvent.page.y;
-        int x = mouseX - canvasX;
-        int y = mouseY - canvasY;
-        int clampX = 0;
-        int clampY = 0;
-        bool withinCanvas = false;
-        if(mouseX < canvasX) {
-          clampX = 0;
-        } else if(mouseX > canvasX+width) {
-          clampX = width;
-        } else {
-          clampX = x;
-          withinCanvas = true;
-        }
-        if(mouseY < canvasY) {
-          clampY = 0;
-          withinCanvas = false;
-        } else if(mouseY > canvasY+height) {
-          clampY = height;
-          withinCanvas = false;
-        } else {
-          clampY = y;
-        }
-
-        int dx, dy;
-        if(_pointerLock.locked) {
-          dx = mouseEvent.movement.x;
-          dy = mouseEvent.movement.y;
-        } else {
-          dx = mouseEvent.client.x-_lastMousePos.x;
-          dy = mouseEvent.client.y-_lastMousePos.y;
-          _lastMousePos = mouseEvent.client;
-        }
-        _lastMousePos = mouseEvent.client;
-        var event = new GameLoopMouseEvent(x, y, dx, dy, clampX, clampY, withinCanvas, time, frame);
-        _mouse.gameLoopMouseEvent(event);
-      } else if (wheelEvent) {
-        WheelEvent wheel = mouseEvent as WheelEvent;
-        _mouse._accumulateWheel(wheel.deltaX, wheel.deltaY);
-      } else {
-        int buttonId = mouseEvent.button;
-        var event = new DigitalButtonEvent(buttonId, down, frame, time);
-        _mouse.digitalButtonEvent(event);
-      }
-    }
-    _mouseEvents.clear();
-  }
-
-  void _processTouchEvents() {
-    for (_GameLoopTouchEvent touchEvent in _touchEvents) {
-      switch (touchEvent.type) {
-        case _GameLoopTouchEvent.Start:
-          _touchSet._start(touchEvent.event);
-          break;
-        case _GameLoopTouchEvent.End:
-          _touchSet._end(touchEvent.event);
-          break;
-        case _GameLoopTouchEvent.Move:
-          _touchSet._move(touchEvent.event);
-          break;
-        default:
-          throw new StateError('Invalid _GameLoopTouchEven type.');
-      }
-    }
-    _touchEvents.clear();
   }
 
   int _rafId;
@@ -258,84 +165,15 @@ class GameLoopHtml extends GameLoop {
     }
   }
 
-  void _fullscreenChange(Event _) {
-    if (onFullscreenChange == null) {
-      return;
-    }
-    onFullscreenChange(this);
-  }
-
-  void _fullscreenError(Event _) {
-    if (onFullscreenChange == null) {
-      return;
-    }
-    onFullscreenChange(this);
-  }
-
-  final List<_GameLoopTouchEvent> _touchEvents = new List<_GameLoopTouchEvent>();
-  void _touchStartEvent(TouchEvent event) {
-    _touchEvents.add(new _GameLoopTouchEvent(event, _GameLoopTouchEvent.Start));
-    event.preventDefault();
-  }
-  void _touchMoveEvent(TouchEvent event) {
-    _touchEvents.add(new _GameLoopTouchEvent(event, _GameLoopTouchEvent.Move));
-    event.preventDefault();
-  }
-  void _touchEndEvent(TouchEvent event) {
-    _touchEvents.add(new _GameLoopTouchEvent(event, _GameLoopTouchEvent.End));
-    event.preventDefault();
-  }
-
-  final List<KeyboardEvent> _keyboardEvents = new List<KeyboardEvent>();
-  void _keyDown(KeyboardEvent event) {
-    _keyboardEvents.add(event);
-  }
-
-  void _keyUp(KeyboardEvent event) {
-    _keyboardEvents.add(event);
-  }
-
-  final List<MouseEvent> _mouseEvents = new List<MouseEvent>();
-  void _mouseDown(MouseEvent event) {
-    _mouseEvents.add(event);
-  }
-
-  void _mouseUp(MouseEvent event) {
-    _mouseEvents.add(event);
-  }
-
-  void _mouseMove(MouseEvent event) {
-    _mouseEvents.add(event);
-  }
-
-  void _mouseWheel(MouseEvent event) {
-    _mouseEvents.add(event);
-    event.preventDefault();
-  }
-
-  void _resize(Event _) {
-    if (_resizePending == false) {
-      _resizePending = true;
-    }
+  List<GameLoopEvent> _inputEvents = [];
+  void _onIncomingEvent(GameLoopEvent e) {
+    _inputEvents.add(e);
   }
 
   /** Start the game loop. */
   void start() {
     if (_initialized == false) {
-      _eventSource.onFullscreenError.listen(_fullscreenError);
-      _eventSource.onFullscreenChange.listen(_fullscreenChange);
-      _eventSource.onTouchStart.listen(_touchStartEvent);
-      _eventSource.onTouchEnd.listen(_touchEndEvent);
-      _eventSource.onTouchCancel.listen(_touchEndEvent);
-      _eventSource.onTouchMove.listen(_touchMoveEvent);
-      _eventSource.onKeyDown.listen(_keyDown);
-      _eventSource.onKeyUp.listen(_keyUp);
-      _eventSource.onResize.listen(_resize);
-
-      _eventSource.onMouseMove.listen(_mouseMove);
-      _eventSource.onMouseDown.listen(_mouseDown);
-      _eventSource.onMouseUp.listen(_mouseUp);
-      _eventSource.onMouseWheel.listen(_mouseWheel);
+      _eventSource.listen(_onIncomingEvent);
       _initialized = true;
     }
     _interrupt = false;
