@@ -115,7 +115,12 @@ class Keyboard extends DigitalInput {
   static const LEFT = KeyCode.LEFT;
   /** The Right key. */
   static const RIGHT = KeyCode.RIGHT;
+  /** The Escape key. */
   static const ESCAPE = KeyCode.ESC;
+  /** The Page up key. */
+  static const PAGE_UP = KeyCode.PAGE_UP;
+  /** The Page down key. */
+  static const PAGE_DOWN = KeyCode.PAGE_DOWN;
   static final List<int> _buttonIds = [A, B, C,
                                D, E, F,
                                G, H, I,
@@ -145,7 +150,9 @@ class Keyboard extends DigitalInput {
                                DOWN,
                                LEFT,
                                RIGHT,
-                               ESCAPE
+                               ESCAPE,
+                               PAGE_UP,
+                               PAGE_DOWN
                                ];
 
   Keyboard(gameLoop) : super(gameLoop, _buttonIds);
